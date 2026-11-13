@@ -380,7 +380,10 @@ h1,h2,h3{margin:0}
       <button class="btn ghost" id="setExport">Copy backup code</button>
       <button class="btn ghost" id="setImport">Restore from code</button>
       <button class="btn ghost" id="setReset" style="color:#ff8a9a">Reset all</button>
-    </div></div>
+    </div>
+    <textarea id="setCode" rows="3" style="display:none;width:100%;margin-top:8px;border-radius:10px;background:var(--bg2);color:var(--text);border:1px solid var(--line);padding:8px;font-family:var(--mono);font-size:11px"></textarea>
+    <div class="row" id="setCodeRow" style="display:none;margin-top:6px"><span class="muted" id="setCodeMsg" style="font-size:13px"></span><div class="spacer"></div><button class="btn" id="setCodeGo">Restore</button></div>
+  </div>
   <div style="text-align:right"><button class="btn" id="setClose">Done</button></div>
 </div></div>
 <div class="toast" id="toast"><span class="i" id="toastI">🏅</span><span id="toastT"></span></div>
@@ -1181,16 +1184,25 @@ $("#hSettings").onclick=()=>{
 };
 $("#setName").addEventListener("input",e=>{ state.name=e.target.value.trim()||state.name; save(); });
 $("#setClose").onclick=()=>{ $("#settings").classList.remove("on"); renderHome(); };
-$("#setReset").onclick=()=>{ if(confirm("Delete ALL progress? This cannot be undone.")){ state=freshState(); save(); $("#settings").classList.remove("on"); startOnboarding(); } };
+let resetArmed=false;
+$("#setReset").onclick=e=>{
+  if(!resetArmed){ resetArmed=true; e.currentTarget.textContent="Click again to delete ALL progress"; setTimeout(()=>{resetArmed=false;$("#setReset").textContent="Reset all";},4000); return; }
+  resetArmed=false; $("#setReset").textContent="Reset all"; state=freshState(); save(); $("#settings").classList.remove("on"); startOnboarding();
+};
 $("#setExport").onclick=async()=>{
   const code=btoa(unescape(encodeURIComponent(JSON.stringify(state))));
+  $("#setCode").style.display=""; $("#setCode").value=code; $("#setCodeRow").style.display="none";
   try{ await navigator.clipboard.writeText(code); toast("💾","Backup code copied. Paste it in a note or email."); }
-  catch(e){ prompt("Copy this backup code:", code); }
+  catch(e){ $("#setCode").select(); toast("💾","Copy the code in the box (Ctrl+C)."); }
 };
 $("#setImport").onclick=()=>{
-  const code=prompt("Paste your backup code:"); if(!code) return;
-  try{ state=Object.assign(freshState(), JSON.parse(decodeURIComponent(escape(atob(code.trim()))))); save(); buildKeyboard(); $("#settings").classList.remove("on"); goHome(); toast("✅","Progress restored!"); }
-  catch(e){ alert("That code does not work. Check that you copied all of it."); }
+  $("#setCode").style.display=""; $("#setCode").value=""; $("#setCode").placeholder="Paste your backup code here"; $("#setCode").focus();
+  $("#setCodeRow").style.display=""; $("#setCodeMsg").textContent="";
+};
+$("#setCodeGo").onclick=()=>{
+  try{ state=Object.assign(freshState(), JSON.parse(decodeURIComponent(escape(atob($("#setCode").value.trim()))))); save(); buildKeyboard();
+    $("#setCode").style.display="none"; $("#setCodeRow").style.display="none"; $("#settings").classList.remove("on"); goHome(); toast("✅","Progress restored!"); }
+  catch(e){ $("#setCodeMsg").textContent="That code does not work. Check that you copied all of it."; }
 };
 
 /* =========================================================================
