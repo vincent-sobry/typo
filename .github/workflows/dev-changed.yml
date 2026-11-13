@@ -1,0 +1,13 @@
+# Signal only. A push to dev starts "Deploy Pages" (on main),
+# which publishes main at the root and dev at /dev/.
+name: Dev changed
+
+on:
+  push:
+    branches: [dev]
+
+jobs:
+  signal:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "dev changed, Deploy Pages will run next"

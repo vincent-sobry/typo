@@ -27,12 +27,30 @@ It is one file (`index.html`). It needs no install, no account and no server.
 
 ## Share with the kids (Chromebooks)
 
-Host the file on GitHub Pages:
+The stable app is on GitHub Pages: https://vincent-sobry.github.io/typoo/
 
-1. Make the repository public (Pages on a free plan needs a public repository).
-2. Go to **Settings → Pages**.
-3. Set **Source** to *Deploy from a branch*. Select the branch with `index.html` and the folder `/ (root)`.
-4. Wait 1–2 minutes. Open `https://<user>.github.io/typo/`.
-5. Send the link to the kids. They can bookmark it in Chrome.
+1. Send the link to the kids. They can bookmark it in Chrome.
+2. Progress is saved in the browser of each Chromebook (local storage). Nothing is sent to a server.
 
-Progress is saved in the browser of each Chromebook (local storage). Nothing is sent to a server.
+## Versions and releases
+
+TL;DR: `main` is the stable app for the kids. New work goes to `dev` first and is tested on a preview link.
+
+| Branch | Link | Use |
+|---|---|---|
+| `main` | https://vincent-sobry.github.io/typoo/ | Stable. The kids use this link. |
+| `dev` | https://vincent-sobry.github.io/typoo/dev/ | Preview. Test new work here. |
+
+The preview shows a red "DEV PREVIEW" label. It saves progress under its own key (`typo.dev.v1`), so tests never change the kids' progress (`typo.v1`).
+
+### Flow
+
+1. **Build:** make a branch from `dev` for each feature or fix. Open a pull request into `dev`.
+2. **Test:** merge the pull request. After 1–2 minutes, test on the preview link.
+3. **Collect:** keep merged features on `dev` until the batch is ready.
+4. **Release:** open one pull request from `dev` into `main`. After the merge, create a release with a new version tag (for example `v1.1`) and a short changelog.
+5. **Hotfix:** an urgent fix goes in a pull request straight into `main`. Then merge `main` back into `dev`.
+
+### Deploy
+
+The workflow `.github/workflows/pages.yml` publishes `main` at the root and `dev` in `/dev/`. It runs after each push to `main` or `dev`. In **Settings → Pages**, **Source** must be *GitHub Actions*.

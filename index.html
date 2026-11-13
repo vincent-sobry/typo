@@ -499,7 +499,14 @@ nl: [
 /* =========================================================================
    STATE & STORAGE
    ========================================================================= */
-const STORE_KEY = "typo.v1";
+/* The dev preview (/typoo/dev/) uses its own key, so tests never touch the kids' progress. */
+const IS_DEV = /\/dev\/?$/.test(location.pathname.replace(/index\.html$/,""));
+const STORE_KEY = IS_DEV ? "typo.dev.v1" : "typo.v1";
+if(IS_DEV) document.addEventListener("DOMContentLoaded",()=>{
+  const b=document.createElement("div"); b.textContent="DEV PREVIEW · test progress only";
+  b.style.cssText="position:fixed;left:8px;bottom:8px;z-index:9999;padding:4px 10px;border-radius:8px;background:#e5484d;color:#fff;font:600 12px system-ui,sans-serif;pointer-events:none;opacity:.9";
+  document.body.appendChild(b);
+});
 const mem = {};
 const storage = {
   get(){ try{ return localStorage.getItem(STORE_KEY); }catch(e){ return mem.v||null; } },
