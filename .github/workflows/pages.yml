@@ -1,0 +1,68 @@
+# Publishes the site to GitHub Pages:
+#   main -> https://vincent-sobry.github.io/typoo/      (stable, for the kids)
+#   dev  -> https://vincent-sobry.github.io/typoo/dev/  (preview, for testing)
+# Pages source must be set to "GitHub Actions" in Settings > Pages.
+name: Deploy Pages
+
+# Runs on a push to main, and after "Dev changed" (a push to dev).
+# The workflow_run trigger runs from main, so the default Pages
+# environment rules (main only) need no change.
+on:
+  push:
+    branches: [main]
+  workflow_run:
+    workflows: ["Dev changed"]
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: main
+
+      - name: Check out dev (if it exists)
+        id: dev
+        continue-on-error: true
+        uses: actions/checkout@v4
+        with:
+          ref: dev
+          path: dev
+
+      - name: Assemble site
+        run: |
+          mkdir -p _site
+          cp main/index.html _site/
+          if [ -f dev/index.html ]; then
+            mkdir -p _site/dev
+            cp dev/index.html _site/dev/
+          fi
+          touch _site/.nojekyll
+          find _site -type f
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
