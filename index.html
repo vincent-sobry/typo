@@ -722,7 +722,7 @@ function fitKeyboard(){
   const u=Math.max(30, Math.min(54, (w-110)/15, byH));
   document.documentElement.style.setProperty("--u", u+"px");
 }
-window.addEventListener("resize", fitKeyboard);
+window.addEventListener("resize", ()=>{ fitKeyboard(); if(screen==="type" && S){ balanceLines(); updateCursor(); } });
 
 /* =========================================================================
    SOUND
@@ -764,7 +764,28 @@ function renderText(){
   const box=$("#text"); box.innerHTML="";
   const frag=document.createDocumentFragment();
   [...S.text].forEach((c,i)=>{ const sp=document.createElement("span"); sp.textContent=c; if(c===" ") sp.className="sp"; sp.id="c"+i; frag.appendChild(sp); });
-  box.appendChild(frag); box.scrollTop=0;
+  box.appendChild(frag); balanceLines(); box.scrollTop=0;
+}
+/* Break the text into rows of near-equal length (no short last row).
+   Find the narrowest row width that still gives the same number of rows as normal wrapping. */
+function balanceLines(){
+  const box=$("#text"); if(!S || !box.firstChild) return;
+  box.querySelectorAll("br").forEach(b=>b.remove());
+  const cs=getComputedStyle(box);
+  const avail=box.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight);
+  const cw=box.firstChild.getBoundingClientRect().width;
+  if(!(avail>0 && cw>0)) return;
+  const max=Math.floor(avail/cw);
+  // words with start index; the space after a word may hang at the row end
+  const words=[]; S.text.replace(/\S+/g,(w,i)=>{ words.push({i,len:w.length}); return w; });
+  if(words.length<2) return;
+  const wrap=width=>{ const br=[]; let start=words[0].i;
+    for(let k=1;k<words.length;k++){ const w=words[k]; if(w.i+w.len-start>width){ br.push(w.i); start=w.i; } }
+    return br; };
+  const rows=wrap(max).length;
+  let lo=Math.max(...words.map(w=>w.len)), hi=max;
+  while(lo<hi){ const mid=(lo+hi)>>1; if(wrap(mid).length<=rows) hi=mid; else lo=mid+1; }
+  wrap(hi).forEach(i=>{ const el=document.getElementById("c"+i); if(el) box.insertBefore(document.createElement("br"), el); });
 }
 function updateCursor(){
   const prev=$("#text .cur"); if(prev) prev.classList.remove("cur");
