@@ -503,9 +503,11 @@ nl: [
 const IS_DEV = /\/dev\/?$/.test(location.pathname.replace(/index\.html$/,""));
 const STORE_KEY = IS_DEV ? "typo.dev.v1" : "typo.v1";
 if(IS_DEV) document.addEventListener("DOMContentLoaded",()=>{
-  const b=document.createElement("div"); b.textContent="DEV PREVIEW · test progress only";
-  b.style.cssText="position:fixed;left:8px;bottom:8px;z-index:9999;padding:4px 10px;border-radius:8px;background:#e5484d;color:#fff;font:600 12px system-ui,sans-serif;pointer-events:none;opacity:.9";
-  document.body.appendChild(b);
+  const f=document.createElement("div");
+  f.style.cssText="position:fixed;inset:0;z-index:9998;border:4px solid #e5484d;pointer-events:none";
+  const b=document.createElement("div"); b.textContent="DEV PREVIEW";
+  b.style.cssText="position:fixed;top:0;left:50%;transform:translateX(-50%);z-index:9999;padding:3px 12px;border-radius:0 0 8px 8px;background:#e5484d;color:#fff;font:700 12px system-ui,sans-serif;letter-spacing:.05em;pointer-events:none";
+  document.body.append(f,b);
 });
 const mem = {};
 const storage = {

@@ -41,7 +41,7 @@ TL;DR: `main` is the stable app for the kids. New work goes to `dev` first and i
 | `main` | https://vincent-sobry.github.io/typoo/ | Stable. The kids use this link. |
 | `dev` | https://vincent-sobry.github.io/typoo/dev/ | Preview. Test new work here. |
 
-The preview shows a red "DEV PREVIEW" label. It saves progress under its own key (`typo.dev.v1`), so tests never change the kids' progress (`typo.v1`).
+The preview shows a red "DEV PREVIEW" label at the top and a thin red border. It saves progress under its own key (`typo.dev.v1`), so tests never change the kids' progress (`typo.v1`).
 
 ### Flow
 
