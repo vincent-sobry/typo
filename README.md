@@ -1,4 +1,4 @@
-# Typo ⌨️ · Learn to touch type
+# Typoo ⌨️ · Learn to touch type
 
 A free web app that teaches teens to type blind with all ten fingers.
 It is one file (`index.html`). It needs no install, no account and no server.
