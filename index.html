@@ -15,8 +15,11 @@
 }
 *{box-sizing:border-box}
 html,body{margin:0;height:100%}
-body{background:radial-gradient(1200px 600px at 10% -10%,#2a1f6b 0,transparent 60%),radial-gradient(900px 500px at 110% 10%,#0c4a5e 0,transparent 55%),var(--bg);
+body{background:var(--bg);
   color:var(--text);font-family:system-ui,"Roboto","Segoe UI",sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+/* Fixed backdrop: stays put while the page scrolls (no repeat seam). Works on iOS, unlike background-attachment:fixed. */
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:radial-gradient(1200px 600px at 10% -10%,#2a1f6b 0,transparent 60%),radial-gradient(900px 500px at 110% 10%,#0c4a5e 0,transparent 55%)}
 button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 .wrap{max-width:1180px;margin:0 auto;padding:16px 20px 40px}
 .screen{display:none}.screen.on{display:block}
